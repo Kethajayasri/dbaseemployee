@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="bf6f41a7-8566-4444-b4ae-419463e1b7eb" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Js@123456" database="employee" />
+	</db:config>
+	<flow name="SelectFlow" doc:id="5720e988-fd07-42f7-a80e-2bd20f56b065" >
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="b5f52d8c-7990-42b7-97c7-f2ed6367508e" variableName="Info"/>
+		<db:select doc:name="Select" doc:id="5cafa2ee-1f0e-4bb3-842d-84221afcaf0d" config-ref="Database_Config">
+			<db:sql ><![CDATA[Select * from employee]]></db:sql>
+			<db:input-parameters ><![CDATA[#[vars.Info]]]></db:input-parameters>
+		</db:select>
+	</flow>
+</mule>

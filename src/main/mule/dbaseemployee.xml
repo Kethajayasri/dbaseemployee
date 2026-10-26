@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7e8ca017-b941-41b8-be82-45d05dccfe7c" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Mysql_Database_Config" doc:name="Database Config" doc:id="eca87d00-2863-4e8d-8819-0c685763d846" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Js@123456" database="employee"/>
+	</db:config>
+	<flow name="dbaseemployeeFlow" doc:id="7a88218f-f2b2-44da-b4f7-588a884507c3" >
+		<http:listener doc:name="Listener" doc:id="68682804-9e8c-4441-9474-9a4e2eff3c15" config-ref="HTTP_Listener_config" path="/employee"/>
+		<logger level="INFO" doc:name="Logger" doc:id="725b9254-d590-4d3f-a6f3-c530691040f5" />
+		<!-- [STUDIO:"Set Variable"]<set-variable value="#[payload&#93;" doc:name="Set Variable" doc:id="a0769e4d-d2a9-452c-8744-5edd108fb0b9" variableName="data"/> [STUDIO] -->
+		<db:insert doc:name="Insert" doc:id="6e7ff8f4-0373-41af-a26d-5141d3ced0fe" config-ref="Mysql_Database_Config">
+			<db:sql ><![CDATA[INSERT INTO employee
+VALUES (:EmployeeName,
+:EmployeeID,
+:Role,
+:Salary);
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+ "EmployeeName": payload.EmployeeName,
+ "EmployeeID" : payload.EmployeeID,
+ "Role" : payload.Role,
+ "Salary": payload.Salary
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="8626e7f6-a309-4638-abf5-d4b2eeaba9db" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="47c9eab0-a063-47f3-ae14-0cb738a96789" />
+	</flow>
+</mule>
